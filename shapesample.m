@@ -1,4 +1,4 @@
-function D_sample = shapesample(N, shape, plt)
+function D_sample = shapesample(shape, N, varargin)
 
 % This function computes N uniform samples from inside the polygon in the shapefile
 % record with optional plotting. Sampling is done by sampling points from 
@@ -6,6 +6,19 @@ function D_sample = shapesample(N, shape, plt)
 % determines if the point is contained in the polygon. Sample points falling outside the 
 % polygon and discarded. This process is repeated until enough samples 
 % inside the polygon have been found.
+
+defaultN = 100;
+defaultPlt = false;
+defaultTitle = 'BIN Sampling';
+
+
+p = inputParser;
+addRequired(p, 'shape');
+addRequired(p, 'N');
+addOptional(p, 'plot', defaultPlt, @islogical);
+addParameter(p, 'title', defaultTitle, @ischar);
+parse(p, 'shape','N', varargin{:});
+
 
 
 sample_points = sampleBox(N, shape);                                               % sampleBox()
@@ -32,13 +45,13 @@ while k < N
 end
 
 % plot shape and sample points
-if plt == 1
+if p.Results.plot == true
     figure
     axis([shape.BoundingBox(1,1) shape.BoundingBox(1,2) shape.BoundingBox(2,1) shape.BoundingBox(2,2)])
     scatter(D_sample(:,1),D_sample(:,2),'.', 'r')
     hold on
     plot(shape.X,shape.Y,'black')
-    title(strcat(shape.STATENAME, ' ',shape.DISTRICT, ', N=',num2str(N))) 
+    title(strcat(p.Results.title, ' with N = ',num2str(N))) 
     axis off
 end    
 end

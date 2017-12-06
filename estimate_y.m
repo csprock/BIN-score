@@ -1,4 +1,4 @@
-function BIN = estimate_y(N_points, shape, plot_shape, plot_arrows, plot_samples)
+function BIN = estimate_y(shape, N_points, varargin)
 
 % This function estimates BIN using the Monte Carlo method with optional
 % plotting. The shapesample() function is called to generate sample points
@@ -7,8 +7,19 @@ function BIN = estimate_y(N_points, shape, plot_shape, plot_arrows, plot_samples
 % choosen direction vectors starting at each sample point. The estimated BIN
 % is the mean of these intersections. 
 
+p = inputParser;
+addRequired(p, 'shape');
+addRequired(p, 'N_points');
+addOptional(p, 'plot_arrows', false, @islogical);
+addOptional(p, 'plot_shape',false, @islogical);
+addParameter(p, 'title', 'BIN Score', @ischar);
+parse(p, 'shape','N_points', varargin{:});
+
+% assign title
+ttl = p.Results.title;
+
 % get sample points using shapesample()
-shape_samples = shapesample(N_points,shape,plot_samples); 
+shape_samples = shapesample(shape, N_points); 
 disp('Sampling Complete. Computing BIN...')
 
 % compute boundary intersections k
@@ -22,10 +33,10 @@ end
 BIN = mean(temp); % compute BIN estimate
 
 msg = strcat('Estimated BIN = ',num2str(BIN));
-disp(ms)
+disp(msg)
 
 % plot shape with direction arrows
-if (plot_arrows == 1 && plot_shape == 1)
+if (p.Results.plot_arrows == true && p.Results.plot_shape == true)
     figure
     axis([shape.BoundingBox(1,1) shape.BoundingBox(1,2) shape.BoundingBox(2,1) shape.BoundingBox(2,2)])
     plot(shape.X,shape.Y, 'black')
@@ -58,16 +69,16 @@ if (plot_arrows == 1 && plot_shape == 1)
           plot(hu(:)',hv(:)')
           hold on
     end
-    title(strcat(shape.STATENAME, ' District No',shape.DISTRICT, ', N = ',num2str(N_points), ', BIN = ',num2str(BIN)), 'FontSize',12)
+    title(strcat(ttl, ', N = ', num2str(N_points), ', BIN = ',num2str(BIN)), 'FontSize',12)
     axis off
     
     % plot shape shape only
-elseif (plot_arrows == 0 && plot_shape == 1)
+elseif (p.Results.plot_arrows == false && p.Results.plot_shape == true)
     figure
     axis([shape.BoundingBox(1,1) shape.BoundingBox(1,2) shape.BoundingBox(2,1) shape.BoundingBox(2,2)])
     plot(shape.X,shape.Y, 'black')
     axis off
-    title(strcat(shape.STATENAME, ' District No',shape.DISTRICT, ', BIN = ',num2str(BIN)), 'FontSize',12)
+    title(strcat(ttl, ', BIN = ',num2str(BIN)), 'FontSize',12)
 else
     %%%%%%%%
 end
