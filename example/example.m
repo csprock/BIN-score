@@ -6,18 +6,11 @@
 
 %%% load district shapefiles
 districts = shaperead('.\districts114.shp');
-%Illinois 4th has index 285
 
-%%% choose random district
-%r = randsample(length(districts),1);
-r = 285;
-plot(districts(r).X, districts(r).Y,'black')
-%% %%% randomly sample from district
-n = 200; %set number of samples
-H = shapesample(districts(r), n, true, 'title','this is a title');
-%% %%% Monte Carlo estimation of Y
-Y = estimate_y(districts(r), 35, true, true, 'title','hello');
-disp(Y)
+% estimate BIN score of Illinois 4th District using 40 sample points and
+% plot district and vectors
+y = estimate_y(districts(285), 40, true, true, 'title','Illinois 4th District');
+
 
 
 
